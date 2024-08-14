@@ -1,65 +1,65 @@
 .data
 msg: .asciiz "Digite uma string pra ser copiada: "	#Mensagem inicial
-msg_copia: .asciiz "\nString copiada: " 			#Mensagem para exibir a string copiada
-buffer: .space 100								#EspaÁo para armazenar a string copiada (100 bytes)
+msg_copia: .asciiz "\nString copiada: " 		#Mensagem para exibir a string copiada
+buffer: .space 100					#Espa√ßo para armazenar a string copiada (100 bytes)
 
 .text
 .globl main
 main:
 	#Exibir a mensagem inicial
 	li $v0, 4				#Carrega 4 em $v0 pra imprimir a mensagem inicial
-	la $a0, msg			#Imprime a mensagem inicial
+	la $a0, msg				#Imprime a mensagem inicial
 	syscall
 	
-	#Ler a string digitada pelo usu·rio
+	#Ler a string digitada pelo usu√°rio
     	li $v0, 8				#Carrega 8 em $v0 pra ler uma string
-    	la $a0, buffer          	#EndereÁo de destino onde a string vai ser armazenada
-    	li $a1, 100             	#Tamanho m·ximo da string a ser lida
+    	la $a0, buffer          		#Endere√ßo de destino onde a string vai ser armazenada
+    	li $a1, 100             		#Tamanho m√°ximo da string a ser lida
     	syscall
 
-	#Chamar a funÁ„o strcpy
-    	la $a0, buffer          	#$a0 recebe o endereÁo de destino (onde a string ser· copiada)
-    	move $a1, $a0           	#$a1 recebe o endereÁo de origem (a prÛpria string lida)
-    	jal strcpy              	#Chama a funÁ„o strcpy
+	#Chamar a fun√ß√£o strcpy
+    	la $a0, buffer          		#$a0 recebe o endere√ßo de destino (onde a string ser√° copiada)
+    	move $a1, $a0           		#$a1 recebe o endere√ßo de origem (a pr√≥pria string lida)
+    	jal strcpy              		#Chama a fun√ß√£o strcpy
     	
     	#Exibir a mensagem para a string copiada
-    	li $v0, 4                #Carrega 4 em $v0 para imprimir a mensagem
-    	la $a0, msg_copia        #EndereÁo da mensagem de exibiÁ„o da string copiada
+    	li $v0, 4                		#Carrega 4 em $v0 para imprimir a mensagem
+    	la $a0, msg_copia        		#Endere√ßo da mensagem de exibi√ß√£o da string copiada
     	syscall
 
     	#Exibir a string copiada
-    	li $v0, 4                #Carrega 4 em $v0 para imprimir a string copiada
-    	la $a0, buffer           #EndereÁo da string copiada
+    	li $v0, 4                		#Carrega 4 em $v0 para imprimir a string copiada
+    	la $a0, buffer           		#Endere√ßo da string copiada
     	syscall
 
 	#Finalizar o programa
-	li $v0, 10			#Carrega 10 em $v0 pra finalizar o programa
+	li $v0, 10				#Carrega 10 em $v0 pra finalizar o programa
 	syscall			
 	
 strcpy:
-    	move $t0, $a0       	#$t0 = endereÁo de destino
-    	move $t1, $a1       	#$t1 = endereÁo de origem
+    	move $t0, $a0       			#$t0 = endere√ßo de destino
+    	move $t1, $a1       			#$t1 = endere√ßo de origem
     	
 loop_copia:
-	lb $t2, 0($t1)           #Carrega o byte atual da origem em $t2
+	lb $t2, 0($t1)           		#Carrega o byte atual da origem em $t2
 	
-    	#Verificar se o caractere È um n˙mero ('0', '9')
-    	li $t3, 0x30             #Carrega o valor ASCII de '0' em $t3
-    	li $t4, 0x39             #Carrega o valor ASCII de '9' em $t4
-    	blt $t2, $t3, check_alpha#Se $t2 < '0', pode ser uma letra, ent„o checar prÛximo
-    	bgt $t2, $t4, check_alpha#Se $t2 > '9', pode ser uma letra, ent„o checar prÛximo
+    	#Verificar se o caractere √© um n√∫mero ('0', '9')
+    	li $t3, 0x30             		#Carrega o valor ASCII de '0' em $t3
+    	li $t4, 0x39             		#Carrega o valor ASCII de '9' em $t4
+    	blt $t2, $t3, check_alpha		#Se $t2 < '0', pode ser uma letra, ent√£o checar pr√≥ximo
+    	bgt $t2, $t4, check_alpha		#Se $t2 > '9', pode ser uma letra, ent√£o checar pr√≥ximo
     
-    	j skip_char             	#Se estiver entre '0' e '9', ignora e vai para o prÛximo caractere
+    	j skip_char             		#Se estiver entre '0' e '9', ignora e vai para o pr√≥ximo caractere
 
 check_alpha:
-    	sb $t2, 0($t0)          	#Armazena o byte atual no destino
-    	addi $t0, $t0, 1        	#AvanÁa para o prÛximo byte do destino
+    	sb $t2, 0($t0)          		#Armazena o byte atual no destino
+    	addi $t0, $t0, 1        		#Avan√ßa para o pr√≥ximo byte do destino
     
 skip_char:
-	addi $t1, $t1, 1        	#AvanÁa para o prÛximo byte da origem
-    	bnez $t2, loop_copia    	#Continua se o byte n„o for NULL
+	addi $t1, $t1, 1        		#Avan√ßa para o pr√≥ximo byte da origem
+    	bnez $t2, loop_copia    		#Continua se o byte n√£o for NULL
 
 fim_loop:
-    sb $zero, 0($t0)         	#Adiciona caractere NULL para finalizar a string copiada
-    move $v0, $a0            	#Retorna o endereÁo de destino em $v0
-    jr $ra                   	#Retorna da funÁ„o
+    sb $zero, 0($t0)         			#Adiciona caractere NULL para finalizar a string copiada
+    move $v0, $a0            			#Retorna o endere√ßo de destino em $v0
+    jr $ra                   			#Retorna da fun√ß√£o
