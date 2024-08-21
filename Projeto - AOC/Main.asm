@@ -1,8 +1,8 @@
 .data
 banner:         .asciiz "AFLM-Shell>> "
-buffer:         .space 128         # Buffer para armazenar a linha de comando
-apartment:      .space 10          # Espaço para o número do apartamento
-resident_name:  .space 50          # Espaço para o nome do morador
+buffer:         .space 128          # Buffer para armazenar a linha de comando
+apartment:      .space 10           # Espaço para o número do apartamento
+resident_name:  .space 50           # Espaço para o nome do morador
 filename:       .asciiz "dados.txt" # Nome do arquivo de dados
 newline:        .asciiz "\n"        # Nova linha para formatação
 separator:      .asciiz " - "       # Separador entre apto e moradores
@@ -12,11 +12,13 @@ comma:          .asciiz ", "        # Separador entre moradores
 .globl main
 
 main:
-
+    # Loop principal para processar comandos
+main_loop:
+    # Exibir o banner
     li $v0, 4
     la $a0, banner
     syscall
-    
+
     # Leitura da linha de comando
     li $v0, 8                       # syscall para leitura de string
     la $a0, buffer                  # endereço do buffer
@@ -41,8 +43,16 @@ main:
     la $a0, resident_name
     syscall
 
-    # Manipular arquivo dados.txt
+    # Manipular arquivo dados.txt (essa parte ainda está a ser implementada)
     #jal add_to_file
+
+    # Exibir uma nova linha para separação
+    li $v0, 4
+    la $a0, newline
+    syscall
+
+    # Volta para o início do loop para exibir o banner novamente e ler um novo comando
+    j main_loop
 
     # Encerrar o programa
     li $v0, 10
@@ -52,6 +62,7 @@ main:
 read_option:
     addi $t0, $t0, 2                # Pula '--'
     li $t3, 0                       # Inicializa contador
+    
 read_char:
     lb $t4, 0($t0)                  # Lê um caractere
     beqz $t4, end_option            # Se for null, termina
@@ -65,7 +76,6 @@ end_option:
     sb $zero, 0($a0)                # Adiciona null terminator
     jr $ra                          # Retorna da função
 
-# Função para adicionar o morador ao arquivo
+# Função para adicionar o morador ao arquivo (a ser implementada)
 #add_to_file:
-
    # jr $ra                          # Retorna da função
