@@ -1,12 +1,31 @@
 .data
-banner:         .asciiz "AFLM-Shell>> "
-buffer:         .space 128          # Buffer para armazenar a linha de comando
-apartment:      .space 10           # Espaço para o número do apartamento
-resident_name:  .space 50           # Espaço para o nome do morador
-filename:       .asciiz "dados.txt" # Nome do arquivo de dados
-newline:        .asciiz "\n"        # Nova linha para formatação
-separator:      .asciiz " - "       # Separador entre apto e moradores
-comma:          .asciiz ", "        # Separador entre moradores
+    banner:         .asciiz "AFLM-Shell>> "
+    buffer:         .space 100          # Buffer para armazenar a linha de comando
+    apartment:      .space 10           # Espaço para o número do apartamento
+    resident_name:  .space 50           # Espaço para o nome do morador
+
+    #Nome do arquivo para salvar dados
+    filename:       .asciiz "dados.txt" # Nome do arquivo de dados
+
+    #Quebra de linha, hifen e vírgula
+    newline:        .asciiz "\n"        # Nova linha para formatação
+    separator:      .asciiz " - "       # Separador entre apto e moradores
+    comma:          .asciiz ", "        # Separador entre moradores
+
+    #Comandos válidos
+    cmd_addMorador:     .asciiz "addMorador"
+    cmd_rmvMorador:     .asciiz "rmvMorador"
+    cmd_addAuto:        .asciiz "addAuto"
+    cmd_rmvAuto:        .asciiz "rmvAuto"
+    cmd_limparAp:       .asciiz "limparAp"
+    cmd_infoAp:         .asciiz "infoAp"
+    cmd_infoGeral:      .asciiz "infoGeral"
+    cmd_salvar:         .asciiz "salvar"
+    cmd_recarregar:     .asciiz "recarregar"
+    cmd_formatar:       .asciiz "formatar"
+    	
+    #Mensagem de comando inválido
+    msg_comando_invalido:.asciiz "Comando inválido\n"
 
 .text
 .globl main
