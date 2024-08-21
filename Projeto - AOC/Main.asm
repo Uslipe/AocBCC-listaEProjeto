@@ -1,10 +1,10 @@
 .data
-banner:         .asciiz "shell>>"
+banner:         .asciiz "AFLM-Shell>> "
 buffer:         .space 128         # Buffer para armazenar a linha de comando
 apartment:      .space 10          # Espaço para o número do apartamento
 resident_name:  .space 50          # Espaço para o nome do morador
 filename:       .asciiz "dados.txt" # Nome do arquivo de dados
-newline:        .asciiz "\n"        # Novo linha para formatação
+newline:        .asciiz "\n"        # Nova linha para formatação
 separator:      .asciiz " - "       # Separador entre apto e moradores
 comma:          .asciiz ", "        # Separador entre moradores
 
