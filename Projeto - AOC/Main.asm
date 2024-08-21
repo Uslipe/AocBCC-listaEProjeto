@@ -1,8 +1,8 @@
 .data
     	banner:         .asciiz "AFLM-Shell>> "
-    	command:        .space 100		    # Espaço para o comando inserido
-    	num_apto: 		.space 20			# Espaço para o número do apartamento
-	    nome_apto: 		.space 20			# Espaço para o nome do morador
+    	command:        .space 100		    	# Espaço para o comando inserido
+    	num_apto: 	.space 20			# Espaço para o número do apartamento
+	nome_apto: 	.space 20			# Espaço para o nome do morador
     	
     	#Nome do arquivo para salvar dados
     	filename:       .asciiz "dados.txt" # Nome do arquivo de dados
