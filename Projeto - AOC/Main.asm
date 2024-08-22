@@ -1,15 +1,17 @@
 .data
     	banner:         .asciiz "AFLM-Shell>> "
     	command:        .space 100		    	# Espaço para o comando inserido
-    	num_apto: 	.space 20			# Espaço para o número do apartamento
-	nome_apto: 	.space 20			# Espaço para o nome do morador
+    	num_apto: 	.space 5			# Espaço para o número do apartamento
+	nome_apto: 	.space 50			# Espaço para o nome do morador
     	
     	#Nome do arquivo para salvar dados
     	filename:       .asciiz "dados.txt" # Nome do arquivo de dados
+        #Caminho do arquivo para salvar dados
+    	dadosSalvos:    .asciiz "C:/Users/alexa/OneDrive/Área de Trabalho/5NOITESNOMARS/dados.txt" # Caminho do arquivo
     	
     	#Quebra de linha, hifen e vírgula
     	quebra_linha:   .asciiz "\n"        # Nova linha para formatação
-    	hifen:          .asciiz " - "       # Separador entre apto e moradores
+    	hifen:          .asciiz "- "       # Separador entre apto e moradores
     	virgula:        .asciiz ", "        # Separador entre moradores
     	
     	#Comandos válidos
@@ -309,7 +311,10 @@ add_Morador:
     	li $v0, 4
     	la $a0, nome_apto
     	syscall                    # Exibe o nome do morador
-	
+
+        #Salvar no arquivo
+	jal add_to_file
+
 	#Pula duas linhas
     	jal print_novalinha
     	jal print_novalinha
@@ -424,6 +429,51 @@ copia_nome_apto:
 fim_extracao:
     sb $zero, 0($t2)
     jr $ra
-	
+
+add_to_file:
+   # Abrir o arquivo para escrita (append)
+    li $v0, 13                      # Syscall para abrir arquivo
+    la $a0, dadosSalvos                # Nome do arquivo
+    li $a1, 9                       # Modo de escrita (1 para write-only)
+    li $a2, 664                       # Sem flags adicionais
+    syscall
+
+    move $s0, $v0                   # Salva o file descriptor no $t0
+
+    # Escrever o número do apartamento e nome do morador no arquivo
+    li $v0, 15                      # Syscall para escrever no arquivo
+    move $a0, $s0                   # File descriptor
+    la $a1, num_apto               # Pega o endereço do número do apartamento (com separador)
+    li $a2, 5                      # Tamanho máximo
+    syscall
+    
+    # Escrever o separador "- " no arquivo
+    li $v0, 15
+    move $a0, $s0  # Move o descritor do arquivo para o registrador $a0
+    la $a1, hifen             # Endereço do separador
+    li $a2, 2                  # Tamanho do separador 
+    syscall
+    
+    # Escrever o espaço e o nome do morador no arquivo
+    li $v0, 15                      # Syscall para escrever no arquivo
+    move $a0, $s0                   # File descriptor
+    la $a1, nome_apto           # Pega o endereço do nome do morador
+    li $a2, 50                      # Tamanho máximo de 50 bytes
+    syscall
+
+    # Escrever uma nova linha no arquivo
+    li $v0, 15                      # Syscall para escrever no arquivo
+    move $a0, $s0                   # File descriptor
+    la $a1, quebra_linha                 # Escreve uma nova linha no arquivo
+    li $a2, 1                       # Escreve apenas 1 byte (newline)
+    syscall
+
+    # Fechar o arquivo
+    li $v0, 16                      # Syscall para fechar o arquivo
+    move $a0, $s0                   # File descriptor
+    syscall
+
+    jr $ra                          # Retorna da função
+
 load_data:
     jr $ra
