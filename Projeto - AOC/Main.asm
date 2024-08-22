@@ -434,7 +434,7 @@ add_to_file:
    # Abrir o arquivo para escrita (append)
     li $v0, 13                      # Syscall para abrir arquivo
     la $a0, dadosSalvos                # Nome do arquivo
-    li $a1, 9                       # Modo de escrita (1 para write-only)
+    li $a1, 9                       # Código para permissão do arquivo
     li $a2, 664                       # Sem flags adicionais
     syscall
 
