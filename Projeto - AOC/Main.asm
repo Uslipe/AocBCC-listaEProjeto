@@ -369,12 +369,24 @@ read_option:
 read_char:
     lb $t4, 0($t0)                  # Lê um caractere
     beqz $t4, end_option            # Se for null, termina
-    beq $t4, 0x20, end_option       # Se for espaço, termina
+    beq $t4, 0x0A, end_option       # Se for newline, termina
+    beq $t4, '-', check_next_char   # Se for '-', verificar se é o próximo argumento
     sb $t4, 0($a0)                  # Armazena caractere na memória (em apartment ou resident_name)
     addi $t0, $t0, 1                # Avança para o próximo caractere na entrada
     addi $a0, $a0, 1                # Avança para o próximo endereço na memória
     j read_char
-    
+
+check_next_char:
+    lb $t5, 1($t0)                  # Lê o próximo caractere
+    bne $t5, '-', not_option_end    # Se não for '--', continua lendo o nome
+    j end_option                    # Se for '--', termina a leitura
+
+not_option_end:
+    sb $t4, 0($a0)                  # Armazena o '-' anterior
+    addi $a0, $a0, 1                # Avança para o próximo endereço na memória
+    addi $t0, $t0, 1                # Avança para o próximo caractere
+    j read_char                     # Continua a leitura
+
 end_option:
     sb $zero, 0($a0)                # Adiciona null terminator
     jr $ra                          # Retorna da função
