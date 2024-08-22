@@ -304,16 +304,16 @@ add_Morador:
     	# Identificar a primeira opção (número do apartamento)
     	la $a0, num_apto           # Endereço onde armazenaremos o número do apartamento
     	jal read_option            # Chama a função para ler a opção
-    	li $v0, 4
-    	la $a0, num_apto
-    	syscall                    # Exibe o número do apartamento
+    	#li $v0, 4
+    	#la $a0, num_apto
+    	#syscall                    # Imprimir o número do ap, para testes
 
     	# Identificar a segunda opção (nome do morador)
     	la $a0, nome_apto          # Endereço onde armazenaremos o nome do morador
     	jal read_option            # Chama a função para ler a opção
-    	li $v0, 4
-    	la $a0, nome_apto
-    	syscall                    # Exibe o nome do morador
+    	#li $v0, 4
+    	#la $a0, nome_apto
+    	#syscall                    # Imprimir o nome do morador, para testar
 
         #Salvar no arquivo
 	jal add_to_file
@@ -332,36 +332,36 @@ rmv_Morador:
 
 add_Auto:
         # Pular a parte 'addAuto '
-        la $t0, command
-        addi $t0, $t0, 8
+        la $t0, command                # Carrega o endereço do buffer de comando
+        addi $t0, $t0, 8               # Move o ponteiro para depois de 'addAuto '
 
         # Identificar a primeira opção (número do apartamento)
         la $a0, num_apto               # Endereço onde armazenaremos o número do apartamento
-        jal read_option
-        li $v0, 4
-        la $a0, num_apto
-        syscall
+        jal read_option                # Chama a função para ler a opção
+        #li $v0, 4
+        #la $a0, num_apto
+        #syscall                       # Imprimir o número do ap, para testes
         
         # Identificar a segunda opção (tipo do veículo)
         la $a0, tipo_auto              # Endereço onde armazenaremos o tipo do veículo
-        jal read_option
-        li $v0, 4
-        la $a0, tipo_auto
-        syscall
+        jal read_option                # Chama a função para ler a opção
+        #li $v0, 4
+        #la $a0, tipo_auto
+        #syscall                       # Imprimir o tipo do automóvel, para testes
     
         # Indentificar a terceira opção (modelo do veículo)
-        la $a0, modelo_auto               # Endereço onde armazenaremos o modelo do veículo
-        jal read_option
-        li $v0, 4
-        la $a0, modelo_auto
-        syscall
+        la $a0, modelo_auto             # Endereço onde armazenaremos o modelo do veículo
+        jal read_option                 # Chama a função para ler a opção
+        #li $v0, 4
+        #la $a0, modelo_auto
+        #syscall                        # Imprimir o modelo do automóvel, para testes
     
         # Identificar a quarta opção (placa do veículo)
         la $a0, placa_auto              # Endereço onde armazenaremos o número da placa
-        jal read_option
-        li $v0, 4
-        la $a0, placa_auto
-        syscall
+        jal read_option                 # Chama a função para ler a opção
+        #li $v0, 4
+        #la $a0, placa_auto
+        #syscall                        # Imprimir a placa do automóvel, para testes
     
         # Manipular arquivo dados.txt (essa parte ainda está a ser implementada)
         jal add_to_file_auto
@@ -371,7 +371,7 @@ add_Auto:
         la $a0, quebra_linha
         syscall
 
-	j main_loop
+	j main_loop                     # Volta para o loop principal
 
 rmv_Auto:
 
@@ -474,9 +474,9 @@ fim_extracao:
 add_to_file:
    # Abrir o arquivo para escrita (append)
     li $v0, 13                      # Syscall para abrir arquivo
-    la $a0, dadosSalvos                # Nome do arquivo
+    la $a0, dadosSalvos             # Nome do arquivo
     li $a1, 9                       # Código para permissão do arquivo
-    li $a2, 664                       # Sem flags adicionais
+    li $a2, 664                     # Sem flags adicionais
     syscall
 
     move $s0, $v0                   # Salva o file descriptor no $t0
@@ -484,28 +484,28 @@ add_to_file:
     # Escrever o número do apartamento e nome do morador no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, num_apto               # Pega o endereço do número do apartamento (com separador)
-    li $a2, 5                      # Tamanho máximo
+    la $a1, num_apto                # Pega o endereço do número do apartamento (com separador)
+    li $a2, 5                       # Tamanho máximo
     syscall
     
     # Escrever o separador "- " no arquivo
     li $v0, 15
     move $a0, $s0  # Move o descritor do arquivo para o registrador $a0
-    la $a1, hifen             # Endereço do separador
-    li $a2, 2                  # Tamanho do separador 
+    la $a1, hifen                   # Endereço do separador
+    li $a2, 2                       # Tamanho do separador 
     syscall
     
     # Escrever o espaço e o nome do morador no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, nome_apto           # Pega o endereço do nome do morador
+    la $a1, nome_apto               # Pega o endereço do nome do morador
     li $a2, 50                      # Tamanho máximo de 50 bytes
     syscall
 
     # Escrever uma nova linha no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, quebra_linha                 # Escreve uma nova linha no arquivo
+    la $a1, quebra_linha            # Escreve uma nova linha no arquivo
     li $a2, 1                       # Escreve apenas 1 byte (newline)
     syscall
 
@@ -519,9 +519,9 @@ add_to_file:
 add_to_file_auto:
    # Abrir o arquivo para escrita (append)
     li $v0, 13                      # Syscall para abrir arquivo
-    la $a0, dadosSalvos                # Nome do arquivo
+    la $a0, dadosSalvos             # Nome do arquivo
     li $a1, 9                       # Modo de escrita (1 para write-only)
-    li $a2, 664                       # Sem flags adicionais
+    li $a2, 664                     # Sem flags adicionais
     syscall
 
     move $s0, $v0                   # Salva o file descriptor no $t0
@@ -529,56 +529,56 @@ add_to_file_auto:
     # Escrever o número do apartamento e nome do morador no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, num_apto               # Pega o endereço do número do apartamento (com separador)
-    li $a2, 5                      # Tamanho máximo
+    la $a1, num_apto                # Pega o endereço do número do apartamento (com separador)
+    li $a2, 5                       # Tamanho máximo
     syscall
     
     # Escrever o separador "- " no arquivo
     li $v0, 15
-    move $a0, $s0  # Move o descritor do arquivo para o registrador $a0
-    la $a1, hifen             # Endereço do separador
-    li $a2, 2                  # Tamanho do separador 
+    move $a0, $s0                   # Move o descritor do arquivo para o registrador $a0
+    la $a1, hifen                   # Endereço do separador
+    li $a2, 2                       # Tamanho do separador 
     syscall
     
     # Escrever o espaço e o nome do morador no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, tipo_auto           # Pega o endereço do nome do morador
-    li $a2, 2                      # Tamanho máximo de 50 bytes
+    la $a1, tipo_auto               # Pega o endereço do nome do morador
+    li $a2, 2                       # Tamanho máximo de 50 bytes
     syscall
 
     # Escrever o separador "- " no arquivo
     li $v0, 15
     move $a0, $s0  # Move o descritor do arquivo para o registrador $a0
-    la $a1, hifen             # Endereço do separador
-    li $a2, 2                  # Tamanho do separador 
+    la $a1, hifen                   # Endereço do separador
+    li $a2, 2                       # Tamanho do separador 
     syscall
     
     # Escrever o espaço e o nome do morador no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, modelo_auto           # Pega o endereço do nome do morador
+    la $a1, modelo_auto             # Pega o endereço do nome do morador
     li $a2, 20                      # Tamanho máximo de 50 bytes
     syscall
     
     # Escrever o separador "- " no arquivo
     li $v0, 15
     move $a0, $s0  # Move o descritor do arquivo para o registrador $a0
-    la $a1, hifen             # Endereço do separador
-    li $a2, 2                  # Tamanho do separador 
+    la $a1, hifen                   # Endereço do separador
+    li $a2, 2                       # Tamanho do separador 
     syscall
     
     # Escrever o espaço e o nome do morador no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, placa_auto           # Pega o endereço do nome do morador
+    la $a1, placa_auto              # Pega o endereço do nome do morador
     li $a2, 12                      # Tamanho máximo de 50 bytes
     syscall
 
     # Escrever uma nova linha no arquivo
     li $v0, 15                      # Syscall para escrever no arquivo
     move $a0, $s0                   # File descriptor
-    la $a1, quebra_linha                 # Escreve uma nova linha no arquivo
+    la $a1, quebra_linha            # Escreve uma nova linha no arquivo
     li $a2, 1                       # Escreve apenas 1 byte (newline)
     syscall
 
