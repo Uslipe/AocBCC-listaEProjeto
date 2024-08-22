@@ -376,7 +376,7 @@ read_char:
     beqz $t4, end_option            # Se for null, termina
     beq $t4, 0x0A, end_option       # Se for newline, termina
     beq $t4, '-', check_next_char   # Se for '-', verificar se é o próximo argumento
-    sb $t4, 0($a0)                  # Armazena caractere na memória (em apartment ou resident_name)
+    sb $t4, 0($a0)                  # Armazena caractere na memória (em num_apto ou nome_apto)
     addi $t0, $t0, 1                # Avança para o próximo caractere na entrada
     addi $a0, $a0, 1                # Avança para o próximo endereço na memória
     j read_char
