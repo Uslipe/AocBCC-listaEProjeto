@@ -1,21 +1,22 @@
 .data
     	banner:         .asciiz "AFLM-Shell>> "
     	command:        .space 100		    	# Espaço para o comando inserido
-    	num_apto: 	.space 5			# Espaço para o número do apartamento
-	nome_apto: 	.space 50			# Espaço para o nome do morador
-        tipo_auto:      .space 2                       #Espaço para o tipo do automóvel
-    	modelo_auto:    .space 20                      #Espaço para o modelo do automóvel
-    	placa_auto:     .space 12                      #Espaço para a placa do automóvel
-
-    	#Nome do arquivo para salvar dados
-    	filename:       .asciiz "dados.txt" # Nome do arquivo de dados
-        #Caminho do arquivo para salvar dados
-    	dadosSalvos:    .asciiz "C:/Users/alexa/OneDrive/Área de Trabalho/5NOITESNOMARS/dados.txt" # Caminho do arquivo
+    	num_apto: 	 .space 5				# Espaço para o número do apartamento
+	nome_apto: 	 .space 50			# Espaço para o nome do morador
+     tipo_auto:      .space 2                # Espaço para o tipo do automóvel
+    	modelo_auto:    .space 20               # Espaço para o modelo do automóvel
+    	placa_auto:     .space 12               # Espaço para a placa do automóvel
+    	conteudo: 	 .space 1024
+    	bufferTemp:     .space 100
+    	contagem:		 .word 0
+    	
+    	#Arquivo para salvar os dados
+    	dadosSalvos:        .asciiz "D:/Códigos em Assembly/Projeto - AOC/dadosSalvos.txt"       # Arquivo definitivo
     	
     	#Quebra de linha, hifen e vírgula
-    	quebra_linha:   .asciiz "\n"        # Nova linha para formatação
-    	hifen:          .asciiz "- "       # Separador entre apto e moradores
-    	virgula:        .asciiz ", "        # Separador entre moradores
+    	quebra_linha:       .asciiz "\n"        # Nova linha para formatação
+    	hifen:          	.asciiz "- "        # Separador entre apto e moradores
+    	virgula:            .asciiz ", "        # Separador entre moradores
     	
     	#Comandos válidos
     	cmd_addMorador:     .asciiz "addMorador"
@@ -29,8 +30,10 @@
     	cmd_recarregar:     .asciiz "recarregar"
     	cmd_formatar:       .asciiz "formatar"
     	
-    	#Mensagem de comando inválido
+    	#Mensagens
     	msg_comando_invalido:.asciiz "Comando inválido\n"
+    	ms_morador_removido: .asciiz "Morador removido com sucesso\n"
+    	
 
 .text
 .globl main
@@ -285,8 +288,8 @@ ret_formatar:
 
 # Função que deve ser chamada para executar o comando
 executar_comando:
-    beq $v0, 1, add_Morador
-    beq $v0, 2, rmv_Morador
+     beq $v0, 1, add_Morador
+     beq $v0, 2, rmv_Morador
 	beq $v0, 3, add_Auto
 	beq $v0, 4, rmv_Auto
 	beq $v0, 5, limpar_Ap
@@ -436,6 +439,72 @@ not_option_end:
 end_option:
     sb $zero, 0($a0)                # Adiciona null terminator
     jr $ra                          # Retorna da função
+    
+contarMoradores:
+	move $t4, $a0
+	
+	# Abrir o arquivo
+	li $v0, 13		   # Codigo do syscall para abrir arquivo
+	la $a0, dadosSalvos	 # Endereço do nome do arquivo
+	li $a1, 0			# Modo de abertura (0 = leitura)
+	syscall
+	move $s0, $v0		# Salva o descritor de arquivo em $s0
+
+	# Ler todo o conteÃºdo
+	move $a0, $s0		# Descritor do arquivo
+	li $v0, 14		   # CÃ³digo do syscall para leitura de arquivo
+	la $a1, conteudo	 # Buffer para armazenar o conteÃºdo
+	li $a2, 1024		 # Tamanho do buffer (em bytes)
+	syscall
+
+	# Fechar o arquivo
+	li $v0, 16		   # CÃ³digo do syscall para fechar o arquivo
+	move $a0, $s0		# Descritor do arquivo
+	syscall
+
+	# Inicializar variÃ¡veis
+	la $t1, conteudo	 # Ponteiro para o buffer
+	la $t2, bufferTemp   # Ponteiro para o buffer temporÃ¡rio
+	li $t0, 0			# Contador de ocorrÃªncias
+	
+verificarLinha:
+	lb $t3, 0($t1) #Carrega o byte que $t1 aponta em $t3
+	beq $t3, 0, encerraPrograma #Se $t3 for zero, chegou ao fim, entÃ£o encerra
+	beq $t3, 10, pularParaProximaLinha #Se $t3 for um pular linha
+	beq $t3, 45, removerHifen #Se for o hifen
+	
+	sb $t3, 0($t2)	  # Armazena o caractere atual no buffer temporÃ¡rio
+	addi $t2, $t2, 1	# AvanÃ§a o ponteiro do buffer temporÃ¡rio
+	addi $t1, $t1, 1	# AvanÃ§a o ponteiro do buffer principal
+	j verificarLinha
+		
+pularParaProximaLinha:
+	addi $t1, $t1, 1
+	la $t2, bufferTemp  # Reinicializa o buffer temporÃ¡rio
+	j verificarLinha
+
+removerHifen:
+	sb $zero, 0($t2)	# Adiciona o caractere nulo no final da string temporÃ¡ria
+	la $a0, bufferTemp  # EndereÃ§o da string temporÃ¡ria
+	move $a1, $t4	   # EndereÃ§o do nÃºmero prÃ©-setado
+	jal funcao_compara_strings
+	beq $v0, 1, incrementarContador
+
+	# Reiniciar o buffer temporÃ¡rio
+	la $t2, bufferTemp
+	addi $t1, $t1, 1
+	beq $v0, 0, verificarLinha
+
+incrementarContador:
+	la $t2, bufferTemp
+	addi $t0, $t0, 1
+	addi $t1, $t1, 1
+	j verificarLinha
+	
+encerraPrograma:
+	jr $ra
+	
+
 	
 # Função para extrair o número do apartamento e nome do morador
 extrair_info:
